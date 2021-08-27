@@ -1,4 +1,3 @@
-from itertools import count, cycle
 from typing import Deque
 from plateau import Plateau
 from object import Object
@@ -9,16 +8,14 @@ class Rover(Object):
     #It is used to increase the code readability
     class Orientation:
         #Indexes all the supported orientations to a make cleaner rotation code
-        #Cycle is used for efficient rotations to get the next and previous orientations
         _head = Deque(['N', 'E', 'S', 'O'])
 
         #Orientation class constructor
         def __init__(self, current) -> None:
+            current = current.upper()
             if current not in self._head:
                 raise ValueError(f"Orientation '{current}' is not allowed")
             self.current = current
-
-
 
     #Rover class constructor
     def __init__(self, plat: Plateau, x: int, y: int, orientation: Orientation, instructions: str) -> None:
@@ -27,8 +24,18 @@ class Rover(Object):
         self.instructions = instructions
         plat.insert(self)
 
-        self._startX = x
-        self._startY = y
+    @property
+    def instructions(self):
+        return self._instructions
+
+    @instructions.setter
+    def instructions(self, value: str) -> None: 
+        self._instructions = ""
+        for char in value:
+            char = char.upper()
+            self._instructions += char
+            if char not in ['M', 'L', 'R']:
+                raise ValueError(f"Invalid instruction: {value}")
 
     #Moves the rover to the first point in front of it
     def moveFwd(self, plat: Plateau) -> None:
@@ -60,20 +67,22 @@ class Rover(Object):
         while self.Orientation._head[0] != self.Orientation.current:
             self.Orientation._head.rotate(1)
 
-        if direction.upper() == 'L':
+        if direction == 'L':
             self.Orientation._head.rotate(1)
             self.Orientation.current  = self.Orientation._head[0]
-        else:
+        elif direction == 'R':
             self.Orientation._head.rotate(-1)
             self.Orientation.current  = self.Orientation._head[0]
+        else:
+            raise ValueError(f"Unexpected direction value: {direction}")
 
     #Execute the instructions stored in the rover
     def execInst(self, plat: Plateau) -> None:
         try:
             for instruction in self.instructions:
-                if instruction.upper() == 'M':
+                if instruction == 'M':
                     self.moveFwd(plat)
-                elif instruction.upper() == 'R' or instruction.upper() == 'L':
+                elif instruction == 'R' or instruction == 'L':
                     self.rotate(instruction)
                 else:
                     raise ValueError(f"Unexpected instruction value: {instruction}")

@@ -20,8 +20,31 @@ class Plateau:
     class Limits:
         #Limits class constructor
         def __init__(self, x: int, y: int) -> None:
-            self.x = x
-            self.y = y
+            self._x = x
+            self._y = y
+
+        @property
+        def x(self) -> int:
+            return self._x
+
+        @x.setter
+        def x(self, value: int) -> None:
+            if value > 0:
+                self.x = value
+            else:
+                raise ValueError(f"The limit has to be greater than zero")
+
+        @property
+        def y(self) -> int:
+            return self._y
+
+        @y.setter
+        def y(self, value: int) -> None:
+            if value > 0:
+                self.y = value
+            else:
+                raise ValueError(f"The limit has to be greater than zero")
+
 
     #Plateau class constructor
     def __init__(self, xLimit: int, yLimit: int) -> None:
@@ -42,9 +65,8 @@ class Plateau:
 
     #Checks if the selected point is available to deploy a object
     def checkPt(self, x, y) -> None:
+        if self.grid[x][y] is not False:
+            raise Plateau.CollisionDetectedError(f"The point [{x},{y}] is already occupied")
 
-            if x > self.Limits.x or y > self.Limits.y or x < 0 or y < 0:
-                raise Plateau.OutOfLimitsError(f"The point [{x},{y}] is off limits")
-
-            if False not in [self.grid[0][x],self.grid[1][y]]:
-                raise Plateau.CollisionDetectedError(f"The point [{x},{y}] is already occupied")
+        if x > self.Limits.x or y > self.Limits.y or x < 0 or y < 0:
+            raise Plateau.OutOfLimitsError(f"The point [{x},{y}] is beyond limits")

@@ -6,7 +6,6 @@ import re
 #Each infinite loop inside of it is a input checker
 def menu() -> None:
     inputError = "Wrong input. Please, try again.\n\n"
-    roverLst = []
 
     while True:
         ans = input("Insert the limits of the grid:\n")
@@ -33,7 +32,7 @@ def menu() -> None:
         if re.match(r"\d+\s\d+\s[a-zA-Z]$", ans):
             roverData = ans.split(" ", 2)
             x, y = [int(x) for x in [roverData[0], roverData[1]]]
-            o = roverData[2].upper()
+            o = roverData[2]
 
             try:
                 plat.checkPt(x, y)
@@ -56,7 +55,7 @@ def menu() -> None:
                 #Checks the sequence of instructions format
                 if re.match(r"[mrlMRL]+$", ans):
                     instructions = ans
-                    roverLst.append(Rover(plat, x, y, o, instructions))
+                    Rover(plat, x, y, o, instructions)
                     break
                 else:
                     print(inputError)
@@ -64,8 +63,7 @@ def menu() -> None:
             print(inputError)
 
 
-
-    for rover in roverLst:
+    for rover in Rover.lstObj:
         try:
             rover.execInst(plat)
             print(f"{rover.x} {rover.y} {rover.Orientation.current}")
